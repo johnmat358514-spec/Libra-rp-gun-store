@@ -1,18 +1,13 @@
-# Ammu-Nation #15 Bulk Order Calculator
+# Libra RP — Ammu-Nation #15
 
-Static customer-facing bulk-order calculator for GitHub Pages. No server, API keys, payment collection, or external dependencies.
+Static GitHub Pages website for fictional in-game bulk orders on the Libra RP roleplay server.
 
-## Publish on GitHub Pages
-
-1. Create a public GitHub repository named `ammu-nation`.
-2. Upload `index.html` (and optionally this README) to the repository root on the `main` branch.
-3. Go to **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**, then **main** and **/(root)**. Click **Save**.
-5. Open `https://YOUR-USERNAME.github.io/ammu-nation/` after deployment completes.
+## Deploy
+Upload `index.html` to the root of `johnmat358514-spec/Libra-rp-gun-store`, commit, then select Settings → Pages → Deploy from branch → main → /(root).
 
 ## Notes
-
-- MOQ is checked per category if the cart contains that category. Weapons: 10 clan/cartel or 50 reseller. Ammo: 5,000 clan/cartel or 10,000 reseller. Body Armor is categorized as Other and has no MOQ.
-- Prices are from the supplied calculator table and should be reviewed before public use.
-- The site does not submit orders or collect customer information. It creates a quote to copy or download.
-- Editing the price list: change the `products` array in `index.html`.
+- Customer pricing and cart totals are shown; internal profits are not.
+- Minimum quantities apply to combined gun or ammunition quantities, when those categories are present in the cart.
+- Armor has no specified MOQ and does not count toward gun MOQ.
+- Switching customer category clears the cart to avoid accidental repricing.
+- This website has no real-world transactions, checkout, or backend.
