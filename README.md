@@ -1,1 +1,5 @@
-Libra RP Ammu-Nation #15 — fictional in-game catalog. Upload index.html AND the complete assets/ folder to the repository root. All art is illustrative concept imagery, not real inventory photos. No real firearms sales.
+# Libra RP Ammu-Nation #15
+
+Upload `index.html` and the **entire `assets/` folder** to the repository root. Keep filenames and folder structure unchanged. GitHub Pages: main branch, /(root).
+
+Images are crops from the two provided Libra RP screenshots; the first four ammunition thumbnails were partially obscured in the source screenshot.
