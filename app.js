@@ -1,13 +1,13 @@
 'use strict';
 
 const $ = selector => document.querySelector(selector);
-const fmt = amount => '$' + Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt = amount => '$' + Number(amount).toLocaleString('en-US', { minimumFractionDigits: Number.isInteger(Number(amount)) ? 0 : 2, maximumFractionDigits: 2 });
 const escapeHTML = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const STORAGE_KEY = 'ammu-nation-15-loadout-v2';
 const MAX_QUANTITY = 100000;
 const typeNames = { gun: 'Weapon', ammo: 'Ammunition', armor: 'Armor' };
 const tierNames = { clan: 'Clan & Cartel', reseller: 'Reseller' };
-let filter = 'all';
+let filter = 'gun';
 let expanded = false;
 let tier = 'clan';
 let cart = {};
@@ -73,36 +73,36 @@ function renderProducts() {
     visible.sort((a, b) => rank(a.index) - rank(b.index));
   }
   const count = visible.length;
-  if (!expanded && !query) visible = visible.slice(0, 6);
+
   $('#resultcount').textContent = `${visible.length < count ? `${visible.length} of ` : ''}${count} ${count === 1 ? 'item' : 'items'} ${query ? 'matching your search' : 'in the armory'}`;
   const otherTier = tier === 'clan' ? 'reseller' : 'clan';
   $('#products').innerHTML = visible.map(product => {
     const name = escapeHTML(product.name);
     const quantity = quantities[product.index] || defaultQuantity(product);
-    return `<article class="product" data-type="${product.type}">
+    return `<article class="product ${product.index < 8 ? 'long-gun' : ''}" data-type="${product.type}">
       <button class="product-image" data-detail="${product.index}" aria-label="View ${name} details">
-        <span class="product-tag">${product.type === 'armor' ? 'PROTECTION' : product.type === 'ammo' ? 'KEEP IT LOADED' : 'THE ARMORY / 15'}</span>
+        <span class="product-tag" aria-hidden="true"><svg class="icon"><use href="#i-box"/></svg></span>
         <img src="${product.image}" alt="${name}" class="${product.image.includes('studio') ? 'image-studio' : ''}" loading="lazy" width="160" height="145">
-        <span class="product-id">AN–${String(product.index + 1).padStart(3, '0')}</span><span class="zoom-mark" aria-hidden="true">↗</span>
+
       </button>
-      <div class="product-body"><div class="product-kind">${typeNames[product.type]}</div><h3><button class="product-title" data-detail="${product.index}">${name}</button></h3>
-      <div class="product-price"><strong>${fmt(product[tier])}</strong><small>/ ${product.type === 'ammo' ? 'round' : 'unit'}</small></div>
-      <div class="alt-price">${tierNames[otherTier]}: ${fmt(product[otherTier])}</div>
-      <div class="product-buy"><div class="quantity"><button data-step="${product.index},-1" aria-label="Decrease ${name} quantity">−</button><input type="number" inputmode="numeric" min="1" max="${MAX_QUANTITY}" step="1" value="${quantity}" id="qty-${product.index}" data-quantity="${product.index}" aria-label="${name} quantity"><button data-step="${product.index},1" aria-label="Increase ${name} quantity">+</button></div><button class="add" data-add="${product.index}" aria-label="Add ${name} to your order">Add <span aria-hidden="true">+</span></button></div></div></article>`;
+      <div class="product-body"><h3><button class="product-title" data-detail="${product.index}">${name}</button></h3>
+      <div class="prices"><div class="${tier === 'clan' ? 'selected-price' : ''}"><small>Clan &amp; Cartel</small><strong>${fmt(product.clan)}</strong></div><div class="${tier === 'reseller' ? 'selected-price' : ''}"><small>Reseller</small><strong>${fmt(product.reseller)}</strong></div></div>
+      <div class="product-buy"><div class="quantity"><button data-step="${product.index},-1" aria-label="Decrease ${name} quantity">−</button><input type="number" inputmode="numeric" min="1" max="${MAX_QUANTITY}" step="1" value="${quantity}" id="qty-${product.index}" data-quantity="${product.index}" aria-label="${name} quantity"><button data-step="${product.index},1" aria-label="Increase ${name} quantity">+</button></div><button class="add" data-add="${product.index}" aria-label="Add ${name} to your order">Add to Cart</button></div></div></article>`;
   }).join('') || `<div class="empty-results"><strong>No gear found.</strong>Try another name or browse the full armory.<br><button id="reset-filters">Reset filters</button></div>`;
-  if (count > 6 && !query) $('#products').insertAdjacentHTML('beforeend', `<button class="load-more" id="load-more">${expanded ? 'Show less' : `Explore all ${count} items`} <span aria-hidden="true">${expanded ? '−' : '+'}</span></button>`);
+
 }
 function renderCart() {
   const result = totals();
   const min = minimums();
   for (const id of ['cartcount', 'headercount', 'mobile-count']) $('#' + id).textContent = result.lines;
+  $('#total-lines').textContent = result.lines;
   $('#grand').textContent = fmt(result.cents / 100);
   $('#mobile-total').textContent = fmt(result.cents / 100);
   $('#cart-tier').textContent = `${tierNames[tier]} pricing`;
   $('#clear').disabled = result.lines === 0;
   $('#cartitems').innerHTML = Object.entries(cart).map(([index, quantity]) => {
     const product = products[Number(index)], name = escapeHTML(product.name);
-    return `<div class="cart-item"><img class="cart-thumb" src="${product.image}" alt=""><div class="cart-info"><div class="cart-item-top"><strong>${name}</strong><button class="remove" data-remove="${index}" aria-label="Remove ${name}">×</button></div><div class="cart-unit">${fmt(product[tier])} / ${product.type === 'ammo' ? 'round' : 'unit'}</div><div class="cart-item-bottom"><div class="cart-qty"><button data-change="${index},-1" aria-label="Decrease ${name} in order">−</button><span>${quantity.toLocaleString()}</span><button data-change="${index},1" aria-label="Increase ${name} in order">+</button></div><strong>${fmt(unitCents(product) * quantity / 100)}</strong></div></div></div>`;
+    return `<div class="cart-item"><img class="cart-thumb" src="${product.image}" alt=""><div class="cart-info"><div class="cart-item-top"><strong>${name}</strong><button class="remove" data-remove="${index}" aria-label="Remove ${name}"><svg class="icon"><use href="#i-trash"/></svg></button></div><div class="cart-unit">${fmt(product[tier])} / ${product.type === 'ammo' ? 'round' : 'unit'}</div><div class="cart-item-bottom"><div class="cart-qty"><button data-change="${index},-1" aria-label="Decrease ${name} in order">−</button><span>${quantity.toLocaleString()}</span><button data-change="${index},1" aria-label="Increase ${name} in order">+</button></div><strong>${fmt(unitCents(product) * quantity / 100)}</strong></div></div></div>`;
   }).join('') || `<div class="cart-empty"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="m7 13 13-7 13 7v16l-13 7-13-7V13Zm0 0 13 7 13-7M20 20v16M13 10l13 7"/><path d="M16 25h8"/></svg><strong>A fresh start. A new loadout.</strong><p>Your order is looking a little light.<br>Find your gear and make it yours.</p><a href="#store">Explore the armory ↗</a></div>`;
   const requiredTypes = ['gun', 'ammo'].filter(type => result[type] > 0);
   $('#requirements').innerHTML = requiredTypes.length ? requiredTypes.map(type => `<div class="requirement ${result[type] >= min[type] ? 'complete' : ''}"><div class="requirement-label"><span>${type === 'gun' ? 'Weapons' : 'Ammo'} minimum</span><span>${result[type].toLocaleString()} / ${min[type].toLocaleString()} ${result[type] >= min[type] ? '✓' : ''}</span></div><div class="progress-track" role="progressbar" aria-label="${type === 'gun' ? 'Weapon' : 'Ammunition'} minimum" aria-valuemin="0" aria-valuemax="${min[type]}" aria-valuenow="${Math.min(min[type], result[type])}"><span style="width:${Math.min(100, result[type] / min[type] * 100)}%"></span></div></div>`).join('') : `<p class="minimum-hint">${tierNames[tier]} minimums: ${min.gun} weapons / ${min.ammo.toLocaleString()} ammo. Applies only to categories ordered.</p>`;
@@ -182,6 +182,7 @@ function downloadOrder() {
 }
 function setFilter(value) {
   filter = value;
+  $('#search').placeholder = `Search ${value === 'gun' ? 'weapons' : value === 'ammo' ? 'ammunition' : 'armor'}…`;
   expanded = false;
   document.querySelectorAll('[data-filter]').forEach(button => {
     const active = button.dataset.filter === value;
@@ -235,7 +236,7 @@ document.addEventListener('click', event => {
   if (button.id === 'clear') { cart = {}; renderCart(); status('Order cleared. Ready for a fresh loadout.'); toast('Your order has been cleared'); $('#copy').focus({ preventScroll: true }); }
   if (button.id === 'copy') copyOrder();
   if (button.id === 'download') downloadOrder();
-  if (button.id === 'reset-filters') { $('#search').value = ''; setFilter('all'); $('#search').focus(); }
+  if (button.id === 'reset-filters') { $('#search').value = ''; setFilter('gun'); $('#search').focus(); }
 });
 document.addEventListener('change', event => {
   if (event.target.dataset.quantity !== undefined) {

@@ -4,7 +4,7 @@ Open `index.html` in a browser. No installation or build is needed. For a local 
 
 To deploy the site to static hosting, include `index.html`, `styles.css`, `fonts.css`, `products.js`, `app.js`, and the complete `assets` folder. The `scripts` directory is only for the optional local preview. No build step is needed.
 
-The redesign includes a custom photographic hero, new product imagery, responsive catalog, category filters, search, price sorting, product details, a persistent cart, tier pricing, bulk minimum checks, clipboard export and TXT downloads. All 22 original items, prices and category minimums are retained. Minimums apply only to weapon/ammunition categories present in the order; armor has no minimum. Switching tiers recalculates prices without clearing the cart.
+The design follows the black-and-gold Libra RP storefront reference: Sandy Shores banner, virtual-store disclaimer, weapon/ammunition/armor tabs, a four-column desktop catalog, both pricing tiers on every product, and a right-hand shopping cart. Features include search, price sorting, product details, a persistent cart, bulk minimum checks, clipboard export and TXT downloads. All 22 original items, prices and category minimums are retained. Minimums apply only to weapon/ammunition categories present in the order; armor has no minimum. Switching tiers recalculates prices without clearing the cart.
 
 Images and fonts are stored locally, so the site can be viewed offline. Product images are representative of fictional roleplay items. The site does not take payment or submit orders to a server; users share the copied/downloaded order with the store team in-game. Cart persistence depends on browser storage being available.
 

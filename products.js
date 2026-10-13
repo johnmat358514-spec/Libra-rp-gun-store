@@ -4,7 +4,7 @@ const products = [
     "clan": 4200,
     "reseller": 3920,
     "type": "gun",
-    "image": "assets/rifle-studio.webp"
+    "image": "assets/advanced-rifle-v2.png"
   },
   {
     "name": "AK-47",
@@ -123,7 +123,7 @@ const products = [
     "clan": 3.72,
     "reseller": 3.47,
     "type": "ammo",
-    "image": "assets/ammo-studio.webp"
+    "image": "assets/rifle-ammo-v2.png"
   },
   {
     "name": "Shotgun Ammo",
@@ -151,6 +151,6 @@ const products = [
     "clan": 1566,
     "reseller": 1461.6,
     "type": "armor",
-    "image": "assets/armor-studio.webp"
+    "image": "assets/body-armor-v2.png"
   }
 ];
